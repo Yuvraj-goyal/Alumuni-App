@@ -2,7 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gtk_flutter/event_list.dart';
 import 'package:gtk_flutter/home_page.dart';
+import 'package:gtk_flutter/profile.dart';
 import 'package:gtk_flutter/reservation_details.dart';
+import 'package:gtk_flutter/yearbook.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -27,8 +29,10 @@ class _HomeState extends State<Home> {
 
     final List<Widget> pages = [
       HomePage(),
+      YearbookPage(),
       EventList(),
       ReservationDetails(),
+      UserProfile(),
     ];
     return Scaffold(
       appBar: AppBar(
@@ -49,6 +53,8 @@ class _HomeState extends State<Home> {
           type: BottomNavigationBarType.fixed,
           items: [
             BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.photo_album), label: 'Yearbook'),
             BottomNavigationBarItem(icon: Icon(Icons.event), label: 'Events'),
             BottomNavigationBarItem(icon: Icon(Icons.favorite), label: 'Saved'),
           ]),

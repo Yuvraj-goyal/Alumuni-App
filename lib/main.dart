@@ -2,7 +2,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart'; // new
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart'; // new
-import 'package:google_fonts/google_fonts.dart';
 import 'package:gtk_flutter/auth_page.dart';
 import 'package:gtk_flutter/firebase_options.dart';
 import 'package:timezone/data/latest.dart' as tz;
@@ -11,13 +10,6 @@ import 'notification.dart';
 import 'home_page.dart';
 
 void main() async {
-  // WidgetsFlutterBinding.ensureInitialized();
-  // NotificationService().initNotification();
-  // tz.initializeTimeZones();
-  // runApp(ChangeNotifierProvider(
-  //   create: (context) => ApplicationState(),
-  //   builder: ((context, child) => const App()),
-  // ));
   WidgetsFlutterBinding.ensureInitialized();
   NotificationService().initNotification();
   tz.initializeTimeZones();
@@ -101,28 +93,6 @@ final _router = GoRouter(
   ],
 );
 
-// class App extends StatelessWidget {
-//   const App({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp.router(
-//       title: 'Reunion',
-//       theme: ThemeData(
-//         buttonTheme: Theme.of(context).buttonTheme.copyWith(
-//               highlightColor: Colors.deepPurple,
-//             ),
-//         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-//         textTheme: GoogleFonts.robotoTextTheme(
-//           Theme.of(context).textTheme,
-//         ),
-//         visualDensity: VisualDensity.adaptivePlatformDensity,
-//         useMaterial3: true,
-//       ),
-//       routerConfig: _router,
-//     );
-//   }
-// }
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
