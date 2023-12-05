@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart' // new
         EmailAuthProvider,
         PhoneAuthProvider; // new
 import 'package:flutter/material.dart'; // new
-import 'package:gtk_flutter/event_list.dart';
 import 'package:gtk_flutter/src/widgets.dart';
 
 class HomePage extends StatelessWidget {
@@ -28,29 +27,6 @@ class HomePage extends StatelessWidget {
           const Header("Welcome to Reunion!"),
           const Paragraph(
             'Explore our upcoming events and join us for a reunion!',
-          ),
-          Center(
-            child: Row(children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 24, bottom: 8, top: 16),
-                child: StyledButton(
-                    onPressed: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => EventList()));
-                    },
-                    child: Text('Explore Events')),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(
-                    left: 5, bottom: 8, top: 16, right: 16),
-                child: StyledButton(
-                    child: Text(
-                      'Browsing Yearbook',
-                      style: TextStyle(fontSize: 14),
-                    ),
-                    onPressed: () {}),
-              )
-            ]),
           ),
         ],
       ),

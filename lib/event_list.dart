@@ -38,7 +38,7 @@ class EventList extends StatelessWidget {
                         ElevatedButton.icon(
                           icon: Icon(Icons.arrow_circle_right),
                           onPressed: () {
-                            print(event);
+                            //print(event);
 
                             Navigator.push(
                               context,
@@ -50,12 +50,6 @@ class EventList extends StatelessWidget {
                           label: Text('Details'),
                         ),
                         const SizedBox(width: 8),
-                        // ElevatedButton.icon(
-                        //   onPressed: () {},
-                        //   icon: Icon(Icons.favorite),
-                        //   label: Text('Like'),
-                        // ),
-                        // const SizedBox(width: 8),
                       ],
                     ),
                   ],

@@ -1,32 +1,10 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart' as auth;
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
-class Event {
-  final String name;
-  final String description;
-  final String date;
-  final String location;
-
-  Event(
-      {required this.name,
-      required this.description,
-      required this.date,
-      required this.location});
-
-  factory Event.fromFirestore(DocumentSnapshot doc) {
-    Map data = doc.data() as Map<dynamic, dynamic>;
-    ;
-    return Event(
-      name: data['name'] ?? '',
-      description: data['description'] ?? '',
-      date: data['date'] ?? '',
-      location: data['location'] ?? '',
-    );
-  }
-}
+import 'package:gtk_flutter/event_details.dart';
+import 'package:gtk_flutter/models/event.dart';
 
 class User {
   final String id;
@@ -44,40 +22,11 @@ class ReservationDetails extends StatefulWidget {
 }
 
 class _ReservationDetailsState extends State<ReservationDetails> {
-  //get events user has registered for
-  // Future<List<dynamic>> getEventsForUser(String userId) async {
-  //   QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-  //       .collectionGroup('registrations')
-  //       .where('userId', isEqualTo: userId)
-  //       .get();
-
-  //   List<String> eventIds = [];
-
-  //   for (QueryDocumentSnapshot doc in querySnapshot.docs) {
-  //     String eventId = doc.reference.parent.parent!.id;
-  //     eventIds.add(eventId);
-  //   }
-
-  //   List<dynamic> events = [];
-
-  //   for (String eventId in eventIds) {
-  //     DocumentSnapshot<Map<String, dynamic>> eventSnapshot =
-  //         await FirebaseFirestore.instance
-  //             .collection('events')
-  //             .doc(eventId)
-  //             .get();
-
-  //     events.add(eventSnapshot.data());
-  //   }
-
-  //   return events;
-  // }
-
   Stream<List<Event>> getUserEvents() {
-    User currentUser = User(
-        auth.FirebaseAuth.instance.currentUser!.uid,
-        auth.FirebaseAuth.instance.currentUser!.displayName!,
-        auth.FirebaseAuth.instance.currentUser!.email!);
+    User? currentUser = User(
+        FirebaseAuth.instance.currentUser!.uid,
+        FirebaseAuth.instance.currentUser!.displayName!,
+        FirebaseAuth.instance.currentUser!.email!);
     // Create a StreamController
     final controller = StreamController<List<Event>>();
 
@@ -133,7 +82,15 @@ class _ReservationDetailsState extends State<ReservationDetails> {
             return ListTile(
               title: Text(event.name),
               subtitle: Text(event.description),
-              // Display other event details as required
+              trailing: Icon(Icons.arrow_forward),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EventDetails(event.toMap()),
+                  ),
+                );
+              },
             );
           },
         );

@@ -29,13 +29,13 @@ class EventDetails extends StatelessWidget {
         FirebaseAuth.instance.currentUser!.displayName!,
         FirebaseAuth.instance.currentUser!.email!);
     Event event = Event(
-      eventData['name'],
-      eventData['description'],
-      eventData['date'],
-      eventData['location'],
+      name: eventData['name'],
+      description: eventData['description'],
+      date: eventData['date'],
+      location: eventData['location'],
     );
 
-    print(currentUser);
+    //print(currentUser);
 
     return Scaffold(
       appBar: AppBar(
@@ -43,7 +43,7 @@ class EventDetails extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
+        child: SafeArea(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -58,10 +58,20 @@ class EventDetails extends StatelessWidget {
                     child: StyledButton(
                         child: Text('RSVP'),
                         onPressed: () {
-                          registerForEvent(event, currentUser, context);
+                          modifyEventRegistration(
+                              event, currentUser, context, true);
                           //print(event);
                         }),
                   ),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: StyledButton(
+                        child: Text('Cancel'),
+                        onPressed: () {
+                          modifyEventRegistration(
+                              event, currentUser, context, false);
+                        }),
+                  )
                 ],
               ),
               const Divider(
@@ -94,7 +104,6 @@ class EventDetails extends StatelessWidget {
                     'Schedule Notification',
                     style: TextStyle(fontSize: 14),
                   )),
-              Image.asset('assets/images/confetti.png')
             ],
           ),
         ),
@@ -102,60 +111,58 @@ class EventDetails extends StatelessWidget {
     );
   }
 
-  Future<void> registerForEvent(
-      Event event, User currentUser, BuildContext context) async {
-    try {
-      CollectionReference events =
-          FirebaseFirestore.instance.collection('events');
+  Future<void> modifyEventRegistration(Event event, User currentUser,
+      BuildContext context, bool register) async {
+    CollectionReference events =
+        FirebaseFirestore.instance.collection('events');
 
-      // Check if the user is already registered for the event
-      QuerySnapshot<Object?> existingRegistration =
+    try {
+      // Check if the event exists and get its ID
+      QuerySnapshot<Object?> eventSnapshot =
           await events.where('name', isEqualTo: event.name).limit(1).get();
 
-      if (existingRegistration.docs.isNotEmpty) {
-        String eventId = existingRegistration.docs.first.id;
+      if (eventSnapshot.docs.isEmpty) {
+        showNotification(context, 'Event with the specified name not found.');
+        return;
+      }
 
-        // Check if the user is already registered for this event
-        QuerySnapshot<Map<String, dynamic>> userRegistration = await events
-            .doc(eventId)
-            .collection('registrations')
-            .where('userId', isEqualTo: currentUser.id)
-            .get();
+      String eventId = eventSnapshot.docs.first.id;
+      DocumentReference registrationRef =
+          events.doc(eventId).collection('registrations').doc(currentUser.id);
 
-        if (userRegistration.docs.isEmpty) {
-          await events
-              .doc(eventId)
-              .collection('registrations')
-              .doc(currentUser.id)
-              .set({
+      if (register) {
+        // Check if the user is already registered
+        DocumentSnapshot<Object?> userRegistration =
+            await registrationRef.get();
+
+        if (!userRegistration.exists) {
+          // Register user for the event
+          await registrationRef.set({
             'userId': currentUser.id,
             'userName': currentUser.name,
             'userEmail': currentUser.email,
             // Add other user details as needed
           });
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('You have registered for the event successfully!'),
-            ),
-          );
-
-          //print('User registered for the event successfully! Event ID: $eventId');
+          showNotification(
+              context, 'You have registered for the event successfully!');
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('You are already registered for this event.'),
-            ),
-          );
+          showNotification(
+              context, 'You are already registered for this event.');
         }
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Event with the specified name not found.'),
-          ),
-        );
+        // Cancel the event registration
+        await registrationRef.delete();
+        showNotification(context,
+            'You have cancelled your registration for the event successfully!');
       }
     } catch (e) {
-      print('Error registering for the event: $e');
+      showNotification(context, 'Error modifying event registration: $e');
     }
+  }
+
+  void showNotification(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
   }
 }
